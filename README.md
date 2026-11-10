@@ -1,0 +1,176 @@
+# drones4health: Ultra-High Resolution Drone Metrics for Spatial Health Analysis
+
+<!-- badges: start -->
+[![R-CMD-check](https://img.shields.io/badge/R-4.6+-blue.svg)](https://www.r-project.org/)
+[![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
+
+<!-- badges: end -->
+
+**`drones4health`** is an R package designed to extract, analyze, and synthesize ultra-high resolution (centimeter-level) remote sensing indicators from Unmanned Aerial Vehicle (UAV) orthomosaics for spatial epidemiology. It bridges micro-environmental landscape ecology with spatial epidemiology for precision vector control, environmental health surveillance, and localized pathogen transmission risk modeling.
+
+---
+
+## 1. Installation
+
+You can install the development version of `drones4health` directly from GitHub:
+
+```r
+# If not yet installed: install.packages("pak")
+pak::pak("JosueFlorian17/drones4health-version-control")
+```
+
+Or using `remotes` / `devtools`:
+
+```r
+# install.packages("remotes")
+remotes::install_github("JosueFlorian17/drones4health-version-control")
+```
+
+```r
+library(drones4health)
+library(terra)
+library(sf)
+```
+
+---
+
+## 2. Core Functional Modules
+
+`drones4health` provides 7 modular indicator suites tailored for spatial epidemiology and field operations:
+
+* **Spectral Vegetation & Canopy Indices:** Quantify photosynthetic vigor, biomass density, and canopy chlorophyll (e.g., `d4h_ndvi()`, `d4h_msavi2()`, `d4h_savi()`, `d4h_ndre()`, `d4h_gndvi()`, `d4h_vari()`, `d4h_evi()`). Used to map vegetative shading and canopy roosting habitats for adult mosquito vectors.
+* **Land Cover & Substrate Masks:** Classify discrete land surface substrates such as bare soil (`d4h_bare_soil()`) to delineate unpaved roads, exposed earth, and peridomestic clearing boundaries.
+* **Hydrological & Micro-Pooling Detection:** Identify open water surfaces, irrigation trenches, and standing moisture pools (`d4h_ndwi()`) that provide aquatic breeding habitats.
+* **Micro-Topography & Terrain Wetness:** Model terrain slope (`d4h_slope()`) and topographic wetness accumulation (`d4h_twi()`) from UAV Digital Elevation Models (DEM/DSM) to pinpoint natural drainage sinks and runoff depressions.
+* **Eco-Epidemiological Risk Modeling:** Synthesize multi-band metrics to locate solid waste micro-accumulations (`d4h_imsr()`), hydric stagnation risk (`d4h_irhe()`, `d4h_iev()`), thermal micro-climate refuges (`d4h_irts()`), and human-forest ecotone interfaces (`d4h_irih()`, `d4h_ifeb()`).
+* **Spatial Zonation & Surveillance Grids:** Tessellate the flight footprint into operational hexagonal grids (`d4h_hex_grid()`) and compute zonal summaries (`d4h_summarize_grid()`) for community health teams and larviciding logistics.
+* **Executive Reporting & Excel Export:** Generate multi-moment descriptive statistics, spatial surface coverage in hectares, and Tukey outlier diagnostics with automated multi-sheet Excel workbook export (`d4h_executive_summary()`, `d4h_export_summary()`).
+
+*(For full mathematical formulations and derivations, see the individual function pages under the [Reference](https://JosueFlorian17.github.io/drones4health-version-control/reference/index.html) tab).*
+
+---
+
+## 3. Practical Workflow: From Raw Orthomosaics to Risk Metrics
+
+All indicator functions accept `terra::SpatRaster` objects or direct file paths, automatically handle spatial co-registration, and mask background NoData to `NA`:
+
+```r
+library(drones4health)
+library(terra)
+
+# 1. Define paths to UAV multispectral and elevation bands
+path_nir <- "data/Ohuay_NIR.tif"
+path_r   <- "data/Ohuay_R.tif"
+path_re  <- "data/Ohuay_RE.tif"
+path_dem <- "data/Ohuay_D.tif"
+
+# 2. Compute vegetation indices and discrete soil substrate masks
+r_ndvi      <- d4h_ndvi(nir = path_nir, red = path_r)
+r_msavi2    <- d4h_msavi2(nir = path_nir, red = path_r)
+r_bare_soil <- d4h_bare_soil(ndvi_raster = r_ndvi, threshold = 0.15)
+
+# 3. Compute micro-terrain slope and topographic wetness
+r_slope     <- d4h_slope(dem_raster = path_dem, unit = "degrees")
+r_twi       <- d4h_twi(dem_raster = path_dem)
+
+# 4. Extract artificial waste micro-accumulation risk (IMSR)
+r_imsr      <- d4h_imsr(red_edge = path_re, red = path_r, nir = path_nir)
+```
+
+---
+
+## 4. Surveillance Zonation & Hexagonal Grids
+
+Partition high-resolution flight footprints into operational units (e.g., 25m or 50m diameter hexagons) for targeted vector intervention:
+
+```r
+# Generate 50m surveillance hexagonal grid
+grid_hex <- d4h_hex_grid(aoi = r_ndvi, cell_size = 50)
+
+# Compute zonal statistics per operational hexagon
+grid_summary <- d4h_summarize_grid(
+  raster_in = r_ndvi,
+  cell_size = 50,
+  square    = FALSE
+)
+```
+
+---
+
+## 5. Executive Reporting & Multi-Sheet Excel Export
+
+Generate statistical moments, spatial extent in hectares, Tukey outlier fences, and domain-specific thematic stratum distributions exported directly into structured `.xlsx` workbooks:
+
+```r
+# Multi-band executive report with direct Excel export
+resumen_ejecutivo <- d4h_executive_summary(
+  raster_in = c(r_ndvi, r_msavi2, r_imsr),
+  out_xlsx  = "salidas/Resumen_Ejecutivo_Drones.xlsx"
+)
+
+# Print executive summary to console
+print(resumen_ejecutivo)
+```
+
+---
+
+## 6. Visualization & Interactive Mapping
+
+`drones4health` provides both static publication-ready cartography via `ggplot2` and interactive Leaflet side-by-side swipe comparison viewers (`d4h_mapview_swipe`).
+
+### A. Interactive Side-by-Side Swipe Viewer
+
+Compare continuous indices, discrete binary masks, and hexagonal grids with a single slider bar and dynamic contrast stretching:
+
+```r
+# Calculate NDVI and Bare Soil mask from multispectral UAV bands
+r_ndvi <- d4h_ndvi(nir = "data/Ohuay_NIR.tif", red = "data/Ohuay_R.tif")
+r_soil <- d4h_bare_soil(ndvi_raster = r_ndvi, threshold = 0.15)
+
+# Render interactive swipe slider
+visor_swipe <- d4h_mapview_swipe(
+  x        = r_ndvi,                    # Left layer: continuous NDVI
+  y        = r_soil,                    # Right layer: discrete Bare Soil mask
+  grid     = NULL,                      # Optional: pass grid_hex to overlay polygons
+  basemap  = TRUE,                      # TRUE = satellite imagery / FALSE = neutral
+  col_x    = "viridis",                 # Viridis palette for NDVI
+  col_y    = c("#f5f5f5", "#8d5b4c")   # Custom colors for bare soil substrate
+)
+
+visor_swipe
+```
+
+#### Visual Outputs:
+
+<p align="center">
+  <img src="man/figures/swipe_ndvi_vs_bare_soil.png" width="90%" alt="Interactive Swipe Viewer - NDVI vs Bare Soil Mask" />
+  <br>
+  <em>Figure 1: Dual-layer side-by-side swipe comparison showing photosynthetic vegetative vigor (NDVI) on the left and exposed bare soil substrates / pathways (Bare Soil Mask) on the right.</em>
+</p>
+
+<p align="center">
+  <img src="man/figures/swipe_hex_grid.png" width="45%" alt="Hexagonal Grid Surveillance Overlay" />
+  <br>
+  <em>Figure 2: Operative hexagonal surveillance grid (50 m) overlaid on the swipe viewer.</em>
+</p>
+
+### B. Static Cartographic Mapping with `ggplot2`
+
+```r
+# Continuous index plot with transparent background
+d4h_plot(r_ndvi, palette = "viridis", title = "NDVI Vegetation Vigor")
+
+# Zonal grid map
+d4h_plot(grid_summary, palette = "magma", title = "Hexagonal Surveillance Grid (50m)")
+```
+
+---
+
+## 7. References
+
+1. **Beven, K. J., & Kirkby, M. J.** (1979). A physically based, variable contributing area model of basin hydrology. *Hydrological Sciences Bulletin*, 24(1), 43-69.
+2. **Fornace, K. M., et al.** (2014). Mapping infectious disease landscapes: unmanned aerial vehicles and epidemiology. *Trends in Parasitology*, 30(11), 514-519.
+3. **Huete, A. R.** (1988). A soil-adjusted vegetation index (SAVI). *Remote Sensing of Environment*, 25(3), 295-309.
+4. **Qi, J., et al.** (1994). A modified soil adjusted vegetation index. *Remote Sensing of Environment*, 48(2), 119-126.
+5. **Rouse, J. W., et al.** (1974). Monitoring vegetation systems in the Great Plains with ERTS. *NASA Special Publication*, 351, 309-317.
+6. **World Health Organization.** (2020). *Operational framework for building climate resilient health systems*. WHO.

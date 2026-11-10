@@ -1,0 +1,177 @@
+url: https://josueflorian17.github.io/drones4health-version-control/
+description: "Ultra-High Resolution Drone Metrics for Spatial Health Analysis and Vector-Borne Disease Surveillance. Micro-environmental remote sensing from UAV orthomosaics for precision vector surveillance."
+
+home:
+  title: "drones4health: Ultra-High Resolution Drone Metrics for Spatial Health"
+
+authors:
+  Josue Florian:
+    href: https://github.com/JosueFlorian17
+
+repo:
+  url:
+    home: https://github.com/JosueFlorian17/drones4health-version-control
+    source: https://github.com/JosueFlorian17/drones4health-version-control/tree/main
+    issues: https://github.com/JosueFlorian17/drones4health-version-control/issues
+
+template:
+  bootstrap: 5
+  light-switch: true
+  includes:
+    in_header: |
+      <script id="MathJax-script" async src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
+      <script>
+        document.addEventListener('DOMContentLoaded', function() {
+          function initSwipers() {
+            var sliders = document.querySelectorAll('.d4h-swipe-range');
+            sliders.forEach(function(slider) {
+              var container = slider.closest('.d4h-swipe-container');
+              if (!container) return;
+              var overlay = container.querySelector('.d4h-swipe-overlay');
+              var overlayImg = overlay ? overlay.querySelector('img') : null;
+              var handle = container.querySelector('.d4h-swipe-handle');
+              var baseImg = container.querySelector('.d4h-swipe-base');
+
+              function updateSlider() {
+                var val = slider.value;
+                if (overlay) overlay.style.width = val + '%';
+                if (handle) handle.style.left = val + '%';
+                if (overlayImg && baseImg) {
+                  overlayImg.style.width = baseImg.offsetWidth + 'px';
+                  overlayImg.style.height = baseImg.offsetHeight + 'px';
+                }
+              }
+
+              slider.addEventListener('input', updateSlider);
+              slider.addEventListener('change', updateSlider);
+              window.addEventListener('resize', updateSlider);
+              if (baseImg && baseImg.complete) {
+                updateSlider();
+              } else if (baseImg) {
+                baseImg.addEventListener('load', updateSlider);
+              }
+            });
+          }
+          initSwipers();
+        });
+      </script>
+
+navbar:
+  bg: custom
+  structure:
+    left: [intro, reference, tutorials, articles, news]
+    right: [search, github, lightswitch]
+
+  components:
+    intro:
+      text: Get Started
+      href: articles/drones4health-quickstart.html
+
+    tutorials:
+      text: Use Cases
+      menu:
+        - text: "Case 01 - Orthomosaic Ingestion & Metric Calculation"
+          href: articles/case1_metrics_calculation.html
+        - text: "Case 02 - Grid Generation & Zonal Statistics"
+          href: articles/case2_grids_zonal_statistics.html
+        - text: "Case 03 - Water Body Segmentation & Grid Analysis"
+          href: articles/case3_water_segmentation_grid_analysis.html
+        - text: "Case 04 - GPS House Buffers & Proximity to Water"
+          href: articles/case4_gps_houses_buffers_distances.html
+
+    articles:
+      text: Guides & Workflows
+      menu:
+        - text: "Quickstart & Workflow Pipeline"
+          href: articles/drones4health-quickstart.html
+        - text: "Interactive Swipe & Visual Analytics"
+          href: articles/interactive-swipe-analytics.html
+
+articles:
+  - title: "Core Use Cases"
+    navbar: ~
+    desc: "Operational end-to-end workflows for ultra-high resolution drone analytics in vector surveillance and environmental health."
+    contents:
+      - case1_metrics_calculation
+      - case2_grids_zonal_statistics
+      - case3_water_segmentation_grid_analysis
+      - case4_gps_houses_buffers_distances
+  - title: "Operational Guides & Interactive Analytics"
+    desc: "Quickstart guides and interactive swipe comparison viewers."
+    contents:
+      - drones4health-quickstart
+      - interactive-swipe-analytics
+
+reference:
+  - title: "Spectral Vegetation Indices & Land Cover Masks"
+    desc: "Functions to calculate multispectral vegetation vigor, canopy chlorophyll, moisture accumulation, and binary bare soil substrate masks."
+    contents:
+      - d4h_ndvi
+      - d4h_msavi2
+      - d4h_savi
+      - d4h_bare_soil
+      - d4h_vari
+      - d4h_ndre
+      - d4h_gndvi
+      - d4h_ndwi
+      - d4h_evi
+      - d4h_dvi
+      - d4h_ctvi
+
+  - title: "Micro-Terrain Topography & Hydrology"
+    desc: "Elevation derivatives and terrain moisture modeling from UAV Digital Elevation Models (DEM/DSM)."
+    contents:
+      - d4h_slope
+      - d4h_twi
+
+  - title: "Eco-Epidemiological Spatial Indices"
+    desc: "Spatial modeling of localized vector-borne disease transmission factors, solid waste micro-accumulation, and hydric breeding suitability."
+    contents:
+      - d4h_imsr
+      - d4h_irhe
+      - d4h_irih
+      - d4h_irts
+      - d4h_iev
+      - d4h_iec
+      - d4h_ifeb
+      - d4h_iead
+
+  - title: "Feature Segmentation & Spatial Proximity to Water"
+    desc: "Automated object segmentation of water bodies and residential building footprints from ultra-high resolution RGB imagery, feature aggregation, and Euclidean distance to water modeling."
+    contents:
+      - d4h_segment_water
+      - d4h_segment_buildings
+      - d4h_combine_features
+      - d4h_distance_to_water
+      - d4h_raster_distance
+
+  - title: "Spatial Grids & Zonation"
+    desc: "Operational surveillance grids (hexagons/squares), grid-level distance-to-water proximity exposure modeling, land cover percentage composition, and zonal summary statistics extraction."
+    contents:
+      - d4h_hex_grid
+      - d4h_grid_distance_to_water
+      - d4h_grid_composition
+      - d4h_summarize_grid
+      - d4h_raster_general
+
+  - title: "Interactive Mapping & Cartography"
+    desc: "Interactive swipe comparison viewers with dynamic contrast tuning, buffer-targeted focal index rendering with house overlays, and static publication-quality ggplot2 cartography."
+    contents:
+      - d4h_mapview_swipe
+      - d4h_indicator_buffer
+      - d4h_plot
+
+  - title: "Indicator Extraction, Executive Reporting & Excel Export"
+    desc: "Multi-indicator automated extraction, multi-moment statistical summaries, Tukey outlier diagnostics, and direct multi-sheet Excel (.xlsx) workbook export."
+    contents:
+      - d4h_extract_indicators
+      - d4h_executive_summary
+      - d4h_export_summary
+
+  - title: "Preprocessing, Calibration & Utilities"
+    desc: "Surface reflectance scaling, thermal calibration to Celsius Land Surface Temperature, raster cleaning, and multi-band stack ingestion workflows with automated spatial metadata handling."
+    contents:
+      - d4h_read_stack
+      - d4h_normalize_reflectance
+      - d4h_thermal_to_celsius
+      - d4h_list_metrics

@@ -1,0 +1,203 @@
+@import url('https://fonts.googleapis.com/css?family=Raleway:400,600,700|Ubuntu+Mono:400,700');
+
+body {
+  font-family: 'Raleway', -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+
+  code, pre {
+    font-family: 'Ubuntu Mono', SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", "Courier New", monospace;
+  }
+}
+
+h1, h2, h3, h4, h5, h6 {
+  font-weight: 700;
+  letter-spacing: -0.01em;
+}
+
+// Custom responsive banner / badges for One Health & institutional support
+$badge-h: 46px;
+
+.funder-badge {
+  display: inline-flex;
+  align-items: stretch;
+  align-self: center;
+  flex-shrink: 0;
+  margin-left: 0.75rem;
+  height: $badge-h;
+  overflow: hidden;
+  border-radius: 0.35rem;
+  background-color: #244654;
+  text-decoration: none;
+  transition: background-color 0.2s ease-in-out;
+
+  .funder-badge-text {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    text-align: center;
+    padding: 0 0.7rem;
+    font-size: 0.72rem;
+    font-weight: 700;
+    line-height: 1.15;
+    letter-spacing: 0.03em;
+    white-space: nowrap;
+    color: #ffffff;
+  }
+
+  svg {
+    display: block;
+    height: $badge-h;
+    width: $badge-h;
+    flex: 0 0 $badge-h;
+    color: #0b2b39;
+    background-color: #ffffff;
+    padding: 4px;
+  }
+
+  .funder-badge-code {
+    display: flex;
+    align-items: center;
+    padding: 0 0.8rem;
+    font-size: 0.75rem;
+    font-weight: 600;
+    letter-spacing: 0.03em;
+    white-space: nowrap;
+    color: #a8f0e5;
+  }
+
+  &:hover {
+    background-color: #14303b;
+    color: #ffffff;
+  }
+
+  @media (max-width: 991.98px) {
+    height: 32px;
+    margin: 0.5rem 0 0.5rem 0.75rem;
+
+    .funder-badge-text {
+      font-size: 0.6rem;
+      padding: 0 0.5rem;
+    }
+
+    .funder-badge-code {
+      font-size: 0.62rem;
+      padding: 0 0.5rem;
+    }
+
+    svg {
+      height: 32px;
+      width: 32px;
+      flex-basis: 32px;
+    }
+  }
+}
+
+// Interactive Image Comparison Slider Widget
+.d4h-swipe-container {
+  position: relative;
+  width: 100%;
+  max-width: 800px;
+  margin: 1.5rem auto;
+  overflow: hidden;
+  border-radius: 8px;
+  box-shadow: 0 4px 14px rgba(0,0,0,0.12);
+  user-select: none;
+  border: 1px solid rgba(0,0,0,0.1);
+
+  .d4h-swipe-base {
+    display: block;
+    width: 100%;
+    height: auto;
+    pointer-events: none;
+  }
+
+  .d4h-swipe-overlay {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 50%;
+    height: 100%;
+    overflow: hidden;
+    pointer-events: none;
+    border-right: 3px solid #ffffff;
+    box-shadow: 2px 0 8px rgba(0,0,0,0.3);
+
+    img {
+      position: absolute;
+      top: 0;
+      left: 0;
+      height: 100%;
+      width: auto;
+      max-width: none;
+      pointer-events: none;
+    }
+  }
+
+  .d4h-swipe-handle {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    width: 40px;
+    height: 40px;
+    background: #ffffff;
+    border: 3px solid #244654;
+    border-radius: 50%;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.35);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    pointer-events: none;
+    z-index: 10;
+
+    &::before {
+      content: '\2194';
+      font-size: 18px;
+      font-weight: bold;
+      color: #244654;
+    }
+  }
+
+  .d4h-swipe-range {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    opacity: 0;
+    margin: 0;
+    padding: 0;
+    cursor: ew-resize;
+    z-index: 20;
+    -webkit-appearance: none;
+    appearance: none;
+  }
+
+  .d4h-swipe-label-left {
+    position: absolute;
+    bottom: 12px;
+    left: 12px;
+    background: rgba(0,0,0,0.65);
+    color: #ffffff;
+    padding: 4px 10px;
+    border-radius: 4px;
+    font-size: 0.8rem;
+    font-weight: 600;
+    pointer-events: none;
+    z-index: 5;
+  }
+
+  .d4h-swipe-label-right {
+    position: absolute;
+    bottom: 12px;
+    right: 12px;
+    background: rgba(0,0,0,0.65);
+    color: #ffffff;
+    padding: 4px 10px;
+    border-radius: 4px;
+    font-size: 0.8rem;
+    font-weight: 600;
+    pointer-events: none;
+    z-index: 5;
+  }
+}

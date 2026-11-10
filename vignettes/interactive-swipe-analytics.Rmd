@@ -1,0 +1,102 @@
+---
+title: "Interactive Swipe & Visual Analytics"
+output: rmarkdown::html_vignette
+vignette: >
+  %\VignetteIndexEntry{Interactive Swipe & Visual Analytics}
+  %\VignetteEngine{knitr::rmarkdown}
+  %\VignetteEncoding{UTF-8}
+---
+
+```{r, include = FALSE}
+knitr::opts_chunk$set(
+  collapse = TRUE,
+  comment = "#>",
+  eval = FALSE
+)
+```
+
+## 1. Overview & Dual-Layer Comparison
+
+In precision spatial epidemiology and micro-environmental surveillance, field researchers and public health brigades need to contrast physical landscape features (such as high-resolution UAV orthomosaics or raw spectral layers) against derived eco-epidemiological indices (e.g., NDVI vs. Bare Soil, TWI vs. Water, or Orthomosaic vs. IMSR).
+
+`drones4health` provides **`d4h_mapview_swipe()`**, an interactive side-by-side swipe slider powered by Leaflet and Mapview swipe mechanics.
+
+### Interactive Live Slider Demo (Leaflet & Mapview Swipe):
+
+<div class="card shadow-sm border-0 mb-4">
+  <div class="card-body p-2">
+    <iframe src="../d4h_swipe_viewer.html" width="100%" height="560px" style="border: none; border-radius: 8px;" title="Interactive Leaflet Swipe Map"></iframe>
+  </div>
+</div>
+
+---
+
+## 2. Interactive In-Browser Swipe Slider
+
+You can render an interactive swipe comparison in your RStudio Viewer, Shiny dashboard, or R Markdown document:
+
+```r
+library(drones4health)
+library(terra)
+
+# 1. Paths to UAV multispectral bands
+nir_path <- "data/Ohuay_NIR.tif"
+red_path <- "data/Ohuay_R.tif"
+
+# 2. Compute NDVI and Bare Soil mask
+r_ndvi <- d4h_ndvi(nir = nir_path, red = red_path)
+r_soil <- d4h_bare_soil(ndvi_raster = r_ndvi, threshold = 0.15)
+
+# 3. Interactive swipe slider (Left: NDVI, Right: Bare Soil Mask)
+d4h_mapview_swipe(
+  x       = r_ndvi,
+  y       = r_soil,
+  col_x   = "viridis",
+  col_y   = c("#f5f5f5", "#8d5b4c"),
+  basemap = TRUE
+)
+```
+
+<div class="row my-4">
+  <div class="col-md-6 text-center">
+    <img src="../man/figures/swipe_layer_ndvi.png" class="img-fluid rounded border" alt="NDVI Layer" width="90%">
+    <p class="small text-muted mt-1"><strong>Left Layer:</strong> NDVI (Vegetation Vigor &amp; Canopy Roosting)</p>
+  </div>
+  <div class="col-md-6 text-center">
+    <img src="../man/figures/swipe_layer_bare_soil.png" class="img-fluid rounded border" alt="Bare Soil Mask" width="90%">
+    <p class="small text-muted mt-1"><strong>Right Layer:</strong> Bare Soil Mask (&lt; 0.15, Exposed Substrate)</p>
+  </div>
+</div>
+
+---
+
+## 3. Superimposing Surveillance Grids
+
+You can also overlay operational surveillance grids (e.g. 50-meter hexagonal grids) directly over the swiping layers:
+
+```r
+# Generate 50m operational hexagonal grid
+grid_hex <- d4h_hex_grid(aoi = r_ndvi, cell_size = 50)
+
+# Swipe with grid overlay for field brigades
+d4h_mapview_swipe(
+  x       = r_ndvi,
+  y       = r_soil,
+  grid    = grid_hex,
+  col_x   = "viridis",
+  col_y   = c("#f5f5f5", "#8d5b4c")
+)
+```
+
+<div class="text-center my-4">
+  <img src="../man/figures/swipe_hex_grid.png" class="img-fluid rounded shadow-sm border" alt="Swipe Viewer with Hexagonal Surveillance Grid" width="85%">
+  <p class="text-muted mt-2"><em>Figure 2: Interactive slider comparison with an operational 50m hexagonal grid overlay for vector control logistics.</em></p>
+</div>
+
+---
+
+## 4. Epidemiological Utility
+
+- **Substrate Validation:** Disentangle bare ground, unpaved pedestrian pathways, and cleared peri-domestic clearings from natural vegetation without ground-truth ambiguity.
+- **Larviciding Planning:** Locate small ditches, water pooling areas, and artificial structures across complex rural and peri-urban landscapes.
+- **Quality Control:** Visually confirm that binary thresholds (e.g., NDVI &lt; 0.15 for bare soil) accurately conform to real landscape features.
